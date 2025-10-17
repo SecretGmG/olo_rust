@@ -1,27 +1,58 @@
 use std::process::Command;
-use std::env;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::fs;
+use std::time::SystemTime;
 
 fn main() {
-    let lib_dir = Path::new("one_loop");
-    if lib_dir.exists() {
-        // Compile Fortran source into a shared library
-        println!("cargo:rerun-if-changed=one_loop/");
-        let status = Command::new("gfortran")
-            .args(&["-shared", "-fPIC"])
-            .args(lib_dir.join("avh_olo.f90").to_str())
-            .arg("-o")
-            .arg("libavh_olo.so")
-            .status()
-            .expect("Failed to compile Fortran library");
-        assert!(status.success(), "Fortran compilation failed");
+    let lib_dir = Path::new("oneloop");
+    let lib_file = lib_dir.join("libavh_olo.a");
 
-        // Tell cargo where to find it
-        println!("cargo:rustc-link-search=native=.");
-        println!("cargo:rustc-link-lib=dylib=avh_olo");
+    // Only rebuild if libavh_olo.a doesn't exist or is older than any .f90 file
+    let rebuild = if !lib_file.exists() {
+        true
     } else {
-        println!("cargo:warning=Fortran source directory not found. Make sure libavh_olo.so exists.");
-        println!("cargo:rustc-link-search=native=.");
-        println!("cargo:rustc-link-lib=dylib=avh_olo");
+        let lib_mtime = lib_file.metadata()
+            .and_then(|m| m.modified())
+            .unwrap_or(SystemTime::UNIX_EPOCH);
+
+        let mut source_newer = false;
+        if let Ok(entries) = fs::read_dir(lib_dir) {
+            for entry in entries.flatten() {
+                if let Some(ext) = entry.path().extension() {
+                    if ext == "f90" {
+                        if let Ok(meta) = entry.metadata() {
+                            if let Ok(modified) = meta.modified() {
+                                if modified > lib_mtime {
+                                    source_newer = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        source_newer
+    };
+
+    if rebuild {
+        println!("cargo:rerun-if-changed=oneloop/");
+
+        let status = Command::new("python3")
+            .current_dir(lib_dir)
+            .arg("./create.py")
+            .status()
+            .expect("Failed to execute create.py for static library");
+        assert!(status.success(), "Fortran static library build failed");
+
+        if !lib_file.exists() {
+            panic!("libavh_olo.a was not created by create.py");
+        }
     }
+
+    // Link the static library and Fortran runtime
+    println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    println!("cargo:rustc-link-lib=static=avh_olo");
+    println!("cargo:rustc-link-lib=gfortran");
+    println!("cargo:rustc-link-lib=quadmath");
 }
