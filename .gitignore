@@ -1,1 +1,12 @@
 /target
+.*.sw*
+*.pyc
+
+# OneLOop build artifacts
+avh_olo.f90
+avh_olo.o
+libavh_olo.*
+*.mod
+
+# Python cache
+src/__pycache__/
