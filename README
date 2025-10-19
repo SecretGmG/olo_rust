@@ -18,6 +18,26 @@ This crate provides a **Rust interface** to the [OneLOop](https://helac-phegas.w
 
 ---
 
+## Build Process
+
+When you build the crate via `cargo build` or `cargo add`:
+
+A `build.rs` script checks whether `oneloop/libavh_olo.a` exists.
+
+If it is missing, the script runs `python3 create.py` inside the `oneloop/` directory to generate the static library.
+
+Cargo then links the library (`libavh_olo.a`) and the Fortran runtime (`gfortran` and `quadmath`) automatically.
+
+Requirements:
+
+Python 3 (`python3` in PATH)
+
+gfortran compiler (Linux/macOS)
+
+Note: Windows is not currently supported.
+
+---
+
 ## Example
 
 ```rust
@@ -61,7 +81,6 @@ fn main() {
         result.epsilon_0() * TO_FEYNMAN
     );
 }
-
 ```
 
 ---
