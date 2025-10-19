@@ -1,0 +1,23 @@
+# OneLOop Rust Wrapper
+
+This crate provides a **Rust interface** to the [OneLOop](https://helac-phegas.web.cern.ch/OneLOop.html) Fortran library for computing **scalar one-loop integrals**
+
+---
+
+## Features
+
+- Safe Rust wrappers for OneLOop scalar functions:
+  - `olo_1_point_complex` → A0
+  - `olo_2_point_complex` → B0
+  - `olo_3_point_complex` → C0
+  - `olo_4_point_complex` → D0
+- Returns a `ResultOLO` struct containing the Laurent expansion coefficients:
+  - `ε⁰` → finite term
+  - `ε⁻¹` → first-order divergence (zero if IR-finite)
+  - `ε⁻²` → second-order divergence (zero if IR-finite)
+
+---
+
+## License
+
+licensed under the GNU GENERAL PUBLIC LICENSE Version 3
