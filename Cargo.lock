@@ -31,4 +31,5 @@ name = "olo_rust_bindings"
 version = "0.1.0"
 dependencies = [
  "num-complex",
+ "num-traits",
 ]
