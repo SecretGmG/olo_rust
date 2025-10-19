@@ -2,7 +2,6 @@ use core::f64;
 use num_complex::Complex64;
 use std::{f64::consts::PI, fmt};
 
-
 /// Conversion factor from the Ellis–Zanderighi / OneLOop normalization of
 /// one-loop scalar integrals to the textbook Feynman-diagram normalization.
 ///
@@ -10,8 +9,7 @@ use std::{f64::consts::PI, fmt};
 /// to the Feynman-diagram normalization in the limit ε → 0 and μ = 1:
 ///
 /// Numerically, this is `-1/(16 π^2)`.
-pub const TO_FEYNMAN: f64 = -1.0 / (16.0*PI*PI);
-
+pub const TO_FEYNMAN: f64 = -1.0 / (16.0 * PI * PI);
 
 /// Represents the Laurent expansion coefficients of a one-loop scalar function
 /// in dimensional regularization.
@@ -156,7 +154,6 @@ pub fn olo_2_point_complex(p: Complex64, m1: Complex64, m2: Complex64) -> Result
     r
 }
 
-
 /// Computes the 3-point scalar (triangle) function for three propagators.
 ///
 /// # Arguments
@@ -185,7 +182,6 @@ pub fn olo_3_point_complex(
     unsafe { ffi::__avh_olo_dp_MOD_c0cc(r.as_mut_ptr(), &p1, &p2, &p3, &m1, &m2, &m3) }
     r
 }
-
 
 /// Computes the 4-point scalar function D0(p1², p2², p3², p4², p12², p23², mm1², mm2², mm3², mm4²)
 /// with Feynman prescription.
@@ -242,7 +238,7 @@ pub fn olo_4_point_complex(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use num_complex::Complex64;
+    use num_complex::{Complex, Complex64};
 
     #[test]
     fn test_olo_1_point_complex() {
@@ -291,5 +287,40 @@ mod tests {
             Complex64::new(0.0, 0.0),
         );
         println!("{}", r)
+    }
+
+    /// Minkowski dot product: (E^2 - px^2 - py^2 - pz^2)
+    fn minkowski_dot(p: [f64; 4]) -> f64 {
+        p[0] * p[0] - (p[1] * p[1] + p[2] * p[2] + p[3] * p[3])
+    }
+    #[test]
+    fn main() {
+        // 2-point example (bubble)
+        let p = Complex64::new(1.0, 0.0);
+        let m1 = Complex64::new(0.5, 0.0);
+        let m2 = Complex64::new(0.2, 0.0);
+        let result = olo_2_point_complex(p, m1, m2);
+        println!("2-point result: {:?}", result);
+
+        // 3-point example (triangle)
+        let k1 = [0.005, 0.0, 0.0, 0.005];
+        let k2 = [0.005, 0.0, 0.0, -0.005];
+
+        let p1 = Complex64::new(minkowski_dot(k1), 0.0);
+        let p2 = Complex64::new(minkowski_dot(k2), 0.0);
+
+        // p3 = (k1 + k2)^2
+        let k3 = [k1[0] + k2[0], k1[1] + k2[1], k1[2] + k2[2], k1[3] + k2[3]];
+        let p3 = Complex64::new(minkowski_dot(k3), 0.0);
+
+        let m = Complex64::new(0.02,0.0);
+
+        let m1 = m*m;
+        let m2 = m*m;
+        let m3 = m*m;
+
+        let result = olo_3_point_complex(p1, p2, p3, m1, m2, m3);
+        println!("3-point result: {:?}", result);
+        println!("Interal value in Feynman convention: {:?}", result.epsilon_0()*TO_FEYNMAN)
     }
 }
