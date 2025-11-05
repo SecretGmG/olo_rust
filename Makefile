@@ -8,4 +8,5 @@ rebuild: clean
 	cargo build
 
 develop:
+	pip install maturin[patchelf]
 	maturin develop --release --features python

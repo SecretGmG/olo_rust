@@ -52,8 +52,8 @@ See `python_example.py` for more examples. Make sure to run this in a virtual en
 
 ```bash
 git clone https://github.com/SecretGmG/olo_rust.git
-pip install maturin
-maturin develop --manifest-path olo_rust/Cargo.toml --release
+pip install maturin[patchelf]
+cd olo_rust && make -f Makefile develop
 ```
 
 After building, you can use the bindings in Python:
