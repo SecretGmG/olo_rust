@@ -32,23 +32,15 @@ A `build.rs` script checks whether `oneloop/libavh_olo.a` exists.
 
 If it is missing, the script runs `python3 create.py` inside the `oneloop/` directory to generate the static library.
 
-Cargo then links the library (`libavh_olo.a`) and the Fortran runtime (`gfortran` and `quadmath`) automatically.
+Cargo then links the library (`libavh_olo.a`) and the Fortran runtime gfortran automatically.
 
 **Requirements:**
 
-- Python3 (`python3` in PATH)
-- `gfortran` compiler
+- `python3`
+- `gfortran`
 - `m4`
 
 Note: Windows is not currently supported.
-
-Yes, that looks correct and clear. A few minor tweaks I’d suggest for clarity and correctness:
-
-1. In the Python section, clarify that you need the **full repo** because `maturin` builds the extension. Right now it just says “clone this git repository” but doesn’t explain why.
-2. Fix the typo: “ad above” → “as above”.
-3. Optional: show how to **import and use the Python bindings** after building with `maturin`.
-
-For example, your Python section could be:
 
 ---
 
