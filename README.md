@@ -2,7 +2,6 @@
 
 This crate provides **Rust and Python interfaces** to the [OneLOop](https://helac-phegas.web.cern.ch/OneLOop.html) Fortran library, enabling computation of **scalar one-loop integrals** in a safe and idiomatic way.
 
-
 ## Features
 
 - Safe wrappers for OneLOop scalar functions:
@@ -20,25 +19,23 @@ This crate provides **Rust and Python interfaces** to the [OneLOop](https://hela
 The wrapper can simply be added with `cargo add`:
 
 ```bash
-cargo add --git https://github.com/SecretGmG/olo_rust
+cargo add --git https://github.com/SecretGmG/OneLOopBridge
 ```
-
 
 ## Python installation
 
 Python bindings are built using maturin.
-This can be done by running the following in an active python environment
+This can be done by running the following in an active python environment:
 
 ```bash
-git clone https://github.com/SecretGmG/olo_rust.git
-cd olo_rust && make -f Makefile develop
+git clone https://github.com/SecretGmG/OneLOopBridge.git
+cd OneLOopBridge && make -f Makefile develop
 ```
 
-After building, you can use the bindings in Python:
+After running this, you can use the bindings in Python:
 
 ```python
-import olo_rust
-from num_complex import Complex
+import oneloop_bridge
 
 r = olo_rust.one_point(1.0)
 print(r.epsilon_0)
@@ -46,16 +43,13 @@ print(r.epsilon_0)
 
 See `python_example.py` for more examples.
 
-
-
 ## System Requirements
 
 - Python 3 (`python3`)
 - GNU Fortran compiler (`gfortran`)
 - `m4` macro processor
 
-> Note: Windows is not currently supported.
-
+Note: Windows is not currently supported.
 
 ## Build process
 
@@ -66,8 +60,6 @@ A `build.rs` script checks whether the compiled binary `oneloop/libavh_olo.a` ex
 If it is missing, the script runs `python3 create.py` inside the `oneloop/` directory to generate the static library.
 
 Cargo then links the library (`libavh_olo.a`) and the Fortran runtime gfortran automatically.
-
-Note: Windows is not currently supported.
 
 ## Rust example
 
