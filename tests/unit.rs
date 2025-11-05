@@ -1,4 +1,4 @@
-use olo_rust::{OLOUnit, set_log_level};
+use oneloop_bridge::{OLOUnit, set_log_level};
 
 #[test]
 fn test_set_olo_unit() {

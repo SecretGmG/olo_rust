@@ -105,7 +105,7 @@ fn set_onshell_threshold(threshold: f64) {
 }
 
 #[pymodule]
-fn olo_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn oneloop_bridge(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("TO_FEYNMAN", TO_FEYNMAN)?;
     m.add_function(wrap_pyfunction!(one_point, m)?)?;
     m.add_function(wrap_pyfunction!(two_point, m)?)?;

@@ -1,5 +1,5 @@
 use num_complex::Complex64;
-use olo_rust::{
+use oneloop_bridge::{
     one_point, two_point, three_point, four_point,
 };
 

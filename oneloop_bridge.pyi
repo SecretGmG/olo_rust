@@ -1,4 +1,29 @@
-# olo_rust.pyi
+"""
+Python API for the OneLOop Rust Wrapper.
+
+This module provides Python bindings to compute **scalar one-loop integrals**
+using the OneLOop Fortran library, wrapped safely in Rust. Functions return
+a `PyOLOResult` object with the Laurent expansion coefficients of the integral.
+
+Features:
+- Compute 1-point (tadpole), 2-point (bubble), 3-point (triangle), and 4-point (box) functions.
+- Access Laurent coefficients: `epsilon_0` (finite), `epsilon_minus_1`, `epsilon_minus_2`.
+- Conversion to standard Feynman-diagram normalization via `TO_FEYNMAN`.
+- Configure logging, renormalization scale, and on-shell thresholds.
+
+Example:
+```python
+import oneloop_bridge
+
+# 1-point tadpole example
+r = oneloop_bridge.one_point(1.0)
+print("Finite term:", r.epsilon_0)
+
+# 2-point bubble example
+r2 = oneloop_bridge.two_point(1.0, 0.5, 0.2)
+print("Finite term in Feynman normalization:", r2.epsilon_0 * oneloop_bridge.TO_FEYNMAN)
+"""
+
 from typing import Optional
 
 TO_FEYNMAN: float

@@ -1,5 +1,5 @@
 use num_complex::{Complex64, ComplexFloat};
-use olo_rust::{three_point, four_point, set_renormalization_scale};
+use oneloop_bridge::{three_point, four_point, set_renormalization_scale};
 
 #[test]
 fn test_olo_scale() {

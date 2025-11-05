@@ -1,3 +1,37 @@
+//! # OneLOop Rust Wrapper
+//! 
+//! This crate provides a **safe, idiomatic Rust interface** to the [OneLOop](https://helac-phegas.web.cern.ch/OneLOop.html) Fortran library for computing **scalar one-loop integrals**. It wraps the standard one-loop scalar functions (1-point to 4-point) and exposes them as Rust functions returning a `OLOResult` struct containing the Laurent expansion coefficients in dimensional regularization.
+//! 
+//! ## Features
+//! 
+//! - Safe Rust wrappers for OneLOop scalar functions:
+//!   - `one_point` → 1-point (tadpole) function
+//!   - `two_point` → 2-point (bubble) function
+//!   - `three_point` → 3-point (triangle) function
+//!   - `four_point` → 4-point (box) function
+//! - Returns `OLOResult` with Laurent expansion coefficients:
+//!   - `ε⁰` → finite term
+//!   - `ε⁻¹` → first-order divergence (zero if IR-finite)
+//!   - `ε⁻²` → second-order divergence (zero if IR-finite)
+//! - Conversion to standard Feynman-diagram normalization via `TO_FEYNMAN`.
+//! - Configurable logging, renormalization scale and on-shell thresholds.
+//! 
+//! ## Example
+//! 
+//! ```rust
+//! use num_complex::Complex64;
+//! use oneloop_bridge::{TO_FEYNMAN, two_point, three_point};
+//! 
+//! let p = 1.0;
+//! let m1 = Complex64::new(0.5, 0.0);
+//! let m2 = Complex64::new(0.2, 0.0);
+//! let result = two_point(p, m1, m2);
+//! println!("2-point result: {:?}", result);
+//! println!("Finite term in Feynman convention: {:?}", result.epsilon_0() * TO_FEYNMAN);
+//! ```
+//! 
+//! ## License
+//! Licensed under the GNU GENERAL PUBLIC LICENSE Version 3.
 use core::f64;
 use num_complex::Complex64;
 use std::{f64::consts::PI, fmt};

@@ -1,5 +1,5 @@
 use num_complex::Complex64;
-use olo_rust::{TO_FEYNMAN, two_point, three_point};
+use oneloop_bridge::{TO_FEYNMAN, two_point, three_point};
 
 
 /// Minkowski dot product: (E^2 - px^2 - py^2 - pz^2)
