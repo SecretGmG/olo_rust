@@ -1,3 +1,4 @@
+use crate::TO_FEYNMAN;
 use crate::{
     OLOResult, OLOUnit
 };
@@ -85,7 +86,7 @@ fn set_renormalization_scale(mu: f64) {
     crate::set_renormalization_scale(mu);
 }
 
-#[pyfunction]
+#[pyfunction(signature = (unit_name, value = None))]
 fn set_log_level(unit_name: &str, value: Option<i32>) -> PyResult<()> {
     let unit = match unit_name.to_lowercase().as_str() {
         "printall" => OLOUnit::PrintAll,
@@ -105,6 +106,7 @@ fn set_onshell_threshold(threshold: f64) {
 
 #[pymodule]
 fn olo_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add("TO_FEYNMAN", TO_FEYNMAN)?;
     m.add_function(wrap_pyfunction!(one_point, m)?)?;
     m.add_function(wrap_pyfunction!(two_point, m)?)?;
     m.add_function(wrap_pyfunction!(three_point, m)?)?;
