@@ -126,7 +126,7 @@ mod ffi {
 ///
 /// # Arguments
 /// * `mu` - The renormalization scale μ (f64).
-pub fn olo_renormalization_scale(mu: f64) {
+pub fn set_renormalization_scale(mu: f64) {
     unsafe {
         ffi::__avh_olo_dp_MOD_olo_scale(&mu);
     }
@@ -137,7 +137,7 @@ pub fn olo_renormalization_scale(mu: f64) {
 /// # Arguments
 /// * `unit`  - The type of message to configure (`PrintAll`, `Message`, `Warning`, `Error`).
 /// * `value` - The Fortran unit number to direct output to (default: 6 = stdout).
-pub fn olo_unit(unit: OLOUnit, fortran_unit_number: Option<i32>) {
+pub fn set_log_level(unit: OLOUnit, fortran_unit_number: Option<i32>) {
     let val = fortran_unit_number.unwrap_or(6);
     let msg = match unit {
         OLOUnit::PrintAll => "printall",
@@ -157,7 +157,7 @@ pub fn olo_unit(unit: OLOUnit, fortran_unit_number: Option<i32>) {
 ///
 /// # Arguments
 /// * `threshold` - Threshold for treating values as on-shell.
-pub fn olo_onshell(threshold: f64) {
+pub fn set_onshell_threshold(threshold: f64) {
     unsafe {
         ffi::__avh_olo_dp_MOD_olo_onshell(&threshold);
     }
@@ -175,7 +175,7 @@ pub fn olo_onshell(threshold: f64) {
 /// # Notes
 /// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
-pub fn olo_1_point_complex(m: Complex64) -> OLOResult {
+pub fn one_point(m: Complex64) -> OLOResult {
     let mut r = OLOResult::default(); // stack-allocated, aligned
     unsafe { ffi::__avh_olo_dp_MOD_a0_c(r.as_mut_ptr(), &m) }
     r
@@ -197,7 +197,7 @@ pub fn olo_1_point_complex(m: Complex64) -> OLOResult {
 /// # Notes
 /// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
-pub fn olo_2_point_complex(p: Complex64, m1: Complex64, m2: Complex64) -> OLOResult {
+pub fn two_point(p: Complex64, m1: Complex64, m2: Complex64) -> OLOResult {
     let mut r = OLOResult::default();
     unsafe { ffi::__avh_olo_dp_MOD_b0cc(r.as_mut_ptr(), &p, &m1, &m2) }
     r
@@ -219,7 +219,7 @@ pub fn olo_2_point_complex(p: Complex64, m1: Complex64, m2: Complex64) -> OLORes
 /// # Notes
 /// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
-pub fn olo_3_point_complex(
+pub fn three_point(
     p1: Complex64,
     p2: Complex64,
     p3: Complex64,
@@ -254,7 +254,7 @@ pub fn olo_3_point_complex(
 /// # Notes
 /// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
-pub fn olo_4_point_complex(
+pub fn four_point(
     p1: Complex64,
     p2: Complex64,
     p3: Complex64,

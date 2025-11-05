@@ -1,5 +1,5 @@
 use num_complex::Complex64;
-use olo_rust::{TO_FEYNMAN, olo_2_point_complex, olo_3_point_complex};
+use olo_rust::{TO_FEYNMAN, two_point, three_point};
 
 
 /// Minkowski dot product: (E^2 - px^2 - py^2 - pz^2)
@@ -13,7 +13,7 @@ fn main() {
     let p = Complex64::new(1.0, 0.0);
     let m1 = Complex64::new(0.5, 0.0);
     let m2 = Complex64::new(0.2, 0.0);
-    let result = olo_2_point_complex(p, m1, m2);
+    let result = two_point(p, m1, m2);
     println!("2-point result: {:?}", result);
 
     // 3-point example (triangle)
@@ -33,7 +33,7 @@ fn main() {
     let m2 = m * m;
     let m3 = m * m;
 
-    let result = olo_3_point_complex(p1, p2, p3, m1, m2, m3);
+    let result = three_point(p1, p2, p3, m1, m2, m3);
     println!("3-point result: {:?}", result);
     println!(
         "Interal value in Feynman convention: {:?}",

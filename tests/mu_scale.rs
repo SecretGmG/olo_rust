@@ -1,11 +1,11 @@
 use num_complex::{Complex64, ComplexFloat};
-use olo_rust::{olo_3_point_complex, olo_4_point_complex, olo_renormalization_scale};
+use olo_rust::{three_point, four_point, set_renormalization_scale};
 
 #[test]
 fn test_olo_scale() {
     // Set scale to 91.1876 (Z boson mass, GeV)
     let mu = 91.1876;
-    olo_renormalization_scale(mu);
+    set_renormalization_scale(mu);
 
     // Just verify it can be called without crashing
     println!("Successfully set OneLOop renormalisation scale to {}", mu);
@@ -25,13 +25,13 @@ fn test_olo_3_point_ir_divergent_with_scales() {
 
     // First scale
     let mu1 = 1.0;
-    olo_renormalization_scale(mu1);
-    let r1 = olo_3_point_complex(s1, s2, s3, m1_sq, m2_sq, m3_sq);
+    set_renormalization_scale(mu1);
+    let r1 = three_point(s1, s2, s3, m1_sq, m2_sq, m3_sq);
 
     // Second scale
     let mu2 = 100.0;
-    olo_renormalization_scale(mu2);
-    let r2 = olo_3_point_complex(s1, s2, s3, m1_sq, m2_sq, m3_sq);
+    set_renormalization_scale(mu2);
+    let r2 = three_point(s1, s2, s3, m1_sq, m2_sq, m3_sq);
 
     println!("First Scale:  {:?}", r1);
     println!("Second Scale: {:?}", r2);
@@ -60,13 +60,13 @@ fn test_olo_4_point_ir_divergent_with_scales() {
 
     // First scale
     let mu1 = 1.0;
-    olo_renormalization_scale(mu1);
-    let r1 = olo_4_point_complex(p1, p2, p3, p4, p12, p23, m1_sq, m2_sq, m3_sq, m4_sq);
+    set_renormalization_scale(mu1);
+    let r1 = four_point(p1, p2, p3, p4, p12, p23, m1_sq, m2_sq, m3_sq, m4_sq);
 
     // Second scale
     let mu2 = 100.0;
-    olo_renormalization_scale(mu2);
-    let r2 = olo_4_point_complex(p1, p2, p3, p4, p12, p23, m1_sq, m2_sq, m3_sq, m4_sq);
+    set_renormalization_scale(mu2);
+    let r2 = four_point(p1, p2, p3, p4, p12, p23, m1_sq, m2_sq, m3_sq, m4_sq);
 
     println!("First Scale {}:  {:?}", mu1, r1);
     println!("Second Scale {}: {:?}", mu2, r2);
