@@ -2,6 +2,7 @@
 
 This crate provides a **Rust interface** to the [OneLOop](https://helac-phegas.web.cern.ch/OneLOop.html) Fortran library, enabling computation of **scalar one-loop integrals** in a safe and idiomatic Rust way.
 
+
 ---
 
 ## Features
@@ -18,9 +19,15 @@ This crate provides a **Rust interface** to the [OneLOop](https://helac-phegas.w
 
 ---
 
-## Build Process
+## Installation and Build Process
 
-When you build the crate via `cargo build` or `cargo add`:
+The wrapper can simply be added with `cargo add`:
+
+```bash
+cargo add --git https://github.com/SecretGmG/olo_rust
+```
+
+When you build the crate via `cargo build`
 
 A `build.rs` script checks whether `oneloop/libavh_olo.a` exists.
 
@@ -28,11 +35,11 @@ If it is missing, the script runs `python3 create.py` inside the `oneloop/` dire
 
 Cargo then links the library (`libavh_olo.a`) and the Fortran runtime (`gfortran` and `quadmath`) automatically.
 
-Requirements:
+**Requirements:**
 
-Python 3 (`python3` in PATH)
-
-gfortran compiler (Linux/macOS)
+- Python3 (`python3` in PATH)
+- `gfortran` compiler
+- `m4`
 
 Note: Windows is not currently supported.
 

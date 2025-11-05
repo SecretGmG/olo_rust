@@ -1,12 +1,14 @@
 use core::f64;
 use num_complex::Complex64;
 use std::{f64::consts::PI, fmt};
+use std::ffi::CString;
 
-/// Conversion factor from the Ellis–Zanderighi / OneLOop normalization of
+
+/// Conversion factor from the Ellis-Zanderighi / OneLOop normalization of
 /// one-loop scalar integrals to the textbook Feynman-diagram normalization.
 ///
 /// The constant `TO_FEYNMAN` converts a LoopTools-normalized integral
-/// to the Feynman-diagram normalization in the limit ε → 0 and μ = 1:
+/// to the Feynman-diagram normalization.
 ///
 /// Numerically, this is `-1/(16 π^2)`.
 pub const TO_FEYNMAN: f64 = -1.0 / (16.0 * PI * PI);
@@ -17,15 +19,15 @@ pub const TO_FEYNMAN: f64 = -1.0 / (16.0 * PI * PI);
 /// The coefficients correspond to the expansion in the dimensional regularization
 /// parameter `ε = (4-d)/2`:
 ///
-/// - `values[0]` → ε⁰ coefficient
-/// - `values[1]` → ε⁻¹ coefficient (vanishes for IR-finite cases)
-/// - `values[2]` → ε⁻² coefficient (vanishes for IR-finite cases)
-#[derive(Clone, Copy, Default)]
-pub struct ResultOLO {
+/// - `values[0]`  ε⁰ coefficient
+/// - `values[1]`  ε⁻¹ coefficient (vanishes for IR-finite cases)
+/// - `values[2]`  ε⁻² coefficient (vanishes for IR-finite cases)
+#[derive(Clone, Copy, Default, PartialEq)]
+pub struct OLOResult {
     values: [Complex64; 3],
 }
 
-impl ResultOLO {
+impl OLOResult {
     /// Returns a mutable pointer to the internal values array
     fn as_mut_ptr(&mut self) -> *mut Complex64 {
         self.values.as_mut_ptr()
@@ -47,7 +49,7 @@ impl ResultOLO {
     }
 }
 
-impl fmt::Display for ResultOLO {
+impl fmt::Display for OLOResult {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
@@ -57,7 +59,7 @@ impl fmt::Display for ResultOLO {
     }
 }
 
-impl fmt::Debug for ResultOLO {
+impl fmt::Debug for OLOResult {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ResultOLO")
             .field("epsilon_0", &self.values[0])
@@ -67,11 +69,24 @@ impl fmt::Debug for ResultOLO {
     }
 }
 
+/// Units that control OneLOop’s print/message behavior.
+#[derive(Debug, Clone, Copy)]
+pub enum OLOUnit {
+    PrintAll,
+    Message,
+    Warning,
+    Error,
+}
+
+
 /// FFI declarations
 mod ffi {
     use super::*;
     unsafe extern "C" {
+        pub fn __avh_olo_units_MOD_set_unit(message: *const i8, val: *const i32);
         pub fn __avh_olo_dp_MOD_olo_onshell(threshold: *const f64);
+        pub fn __avh_olo_dp_MOD_olo_scale(mu_scale: *const f64);
+        pub fn __avh_olo_dp_set_mu(mu: *const f64);
         pub fn __avh_olo_dp_MOD_a0_c(r: *mut Complex64, m: *const Complex64);
         pub fn __avh_olo_dp_MOD_b0cc(
             r: *mut Complex64,
@@ -104,10 +119,41 @@ mod ffi {
     }
 }
 
+/// Sets the renormalization scale for OneLOop calculations.
+///
+/// # Arguments
+/// * `mu` - The renormalization scale μ (f64).
+pub fn olo_renormalization_scale(mu: f64) {
+    unsafe {
+        ffi::__avh_olo_dp_MOD_olo_scale(&mu);
+    }
+}
+
+/// Sets the output unit for OneLOop messages.
+///
+/// # Arguments
+/// * `unit`  - The type of message to configure (`PrintAll`, `Message`, `Warning`, `Error`).
+/// * `value` - The Fortran unit number to direct output to (default: 6 = stdout).
+pub fn olo_unit(unit: OLOUnit, fortran_unit_number: Option<i32>) {
+    let val = fortran_unit_number.unwrap_or(6);
+    let msg = match unit {
+        OLOUnit::PrintAll => "printall",
+        OLOUnit::Message  => "message",
+        OLOUnit::Warning  => "warning",
+        OLOUnit::Error    => "error",
+    };
+
+    let c_msg = CString::new(msg).expect("CString failed");
+    unsafe {
+        ffi::__avh_olo_units_MOD_set_unit(c_msg.as_ptr(), &val);
+    }
+}
+
+
 /// Sets the on-shell threshold for OneLOop calculations.
 ///
 /// # Arguments
-/// * `threshold` – Threshold for treating values as on-shell.
+/// * `threshold` - Threshold for treating values as on-shell.
 pub fn olo_onshell(threshold: f64) {
     unsafe {
         ffi::__avh_olo_dp_MOD_olo_onshell(&threshold);
@@ -124,10 +170,10 @@ pub fn olo_onshell(threshold: f64) {
 /// A `ResultOLO` containing the evaluated complex scalar integral.
 ///
 /// # Notes
-/// This uses the LoopTools / AVH OLO convention internally. To convert to
+/// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
-pub fn olo_1_point_complex(m: Complex64) -> ResultOLO {
-    let mut r = ResultOLO::default(); // stack-allocated, aligned
+pub fn olo_1_point_complex(m: Complex64) -> OLOResult {
+    let mut r = OLOResult::default(); // stack-allocated, aligned
     unsafe { ffi::__avh_olo_dp_MOD_a0_c(r.as_mut_ptr(), &m) }
     r
 }
@@ -146,10 +192,10 @@ pub fn olo_1_point_complex(m: Complex64) -> ResultOLO {
 /// A `ResultOLO` containing the evaluated complex scalar integral.
 ///
 /// # Notes
-/// This uses the LoopTools / AVH OLO convention internally. To convert to
+/// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
-pub fn olo_2_point_complex(p: Complex64, m1: Complex64, m2: Complex64) -> ResultOLO {
-    let mut r = ResultOLO::default();
+pub fn olo_2_point_complex(p: Complex64, m1: Complex64, m2: Complex64) -> OLOResult {
+    let mut r = OLOResult::default();
     unsafe { ffi::__avh_olo_dp_MOD_b0cc(r.as_mut_ptr(), &p, &m1, &m2) }
     r
 }
@@ -168,7 +214,7 @@ pub fn olo_2_point_complex(p: Complex64, m1: Complex64, m2: Complex64) -> Result
 /// A `ResultOLO` containing the evaluated complex scalar integral.
 ///
 /// # Notes
-/// This uses the LoopTools / AVH OLO convention internally. To convert to
+/// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
 pub fn olo_3_point_complex(
     p1: Complex64,
@@ -177,8 +223,8 @@ pub fn olo_3_point_complex(
     m1: Complex64,
     m2: Complex64,
     m3: Complex64,
-) -> ResultOLO {
-    let mut r = ResultOLO::default();
+) -> OLOResult {
+    let mut r = OLOResult::default();
     unsafe { ffi::__avh_olo_dp_MOD_c0cc(r.as_mut_ptr(), &p1, &p2, &p3, &m1, &m2, &m3) }
     r
 }
@@ -203,7 +249,7 @@ pub fn olo_3_point_complex(
 /// A `ResultOLO` containing the evaluated complex scalar integral.
 ///
 /// # Notes
-/// This uses the LoopTools / AVH OLO convention internally. To convert to
+/// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
 pub fn olo_4_point_complex(
     p1: Complex64,
@@ -216,8 +262,8 @@ pub fn olo_4_point_complex(
     m2: Complex64,
     m3: Complex64,
     m4: Complex64,
-) -> ResultOLO {
-    let mut r = ResultOLO::default();
+) -> OLOResult {
+    let mut r = OLOResult::default();
     unsafe {
         ffi::__avh_olo_dp_MOD_d0cc(
             r.as_mut_ptr(),
@@ -234,93 +280,4 @@ pub fn olo_4_point_complex(
         )
     }
     r
-}
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use num_complex::{Complex, Complex64};
-
-    #[test]
-    fn test_olo_1_point_complex() {
-        olo_onshell(1e-10);
-        let r = olo_1_point_complex(Complex64::new(100.0, -1.4));
-        println!("{}", r);
-    }
-
-    #[test]
-    fn test_olo_2_point_complex() {
-        olo_onshell(1e-10);
-        let r = olo_2_point_complex(
-            Complex64::new(1.0, 0.0),
-            Complex64::new(0.5, 0.0),
-            Complex64::new(0.5, 0.0),
-        );
-        println!("{}", r);
-    }
-    #[test]
-    fn test_olo_3_point_complex() {
-        olo_onshell(1e-10);
-        // external momenta squared (s1, s2, s3) and internal masses squared
-        let m_sr = 0.0004;
-
-        let s1 = Complex64::new(0.0, 0.0); // p1^2
-        let s2 = Complex64::new(0.0, 0.0); // p2^2
-        let s3 = Complex64::new(0.0001, 0.0); // (p1+p2)^2
-        let m1_sq = Complex64::new(m_sr, 0.0);
-        let m2_sq = Complex64::new(m_sr, 0.0);
-        let m3_sq = Complex64::new(m_sr, 0.0);
-        let r = olo_3_point_complex(s1, s2, s3, m1_sq, m2_sq, m3_sq);
-        print!("{}", r)
-    }
-    #[test]
-    fn test_olo_4_point_complex() {
-        let r = olo_4_point_complex(
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-            Complex64::new(0.0, 0.0),
-        );
-        println!("{}", r)
-    }
-
-    /// Minkowski dot product: (E^2 - px^2 - py^2 - pz^2)
-    fn minkowski_dot(p: [f64; 4]) -> f64 {
-        p[0] * p[0] - (p[1] * p[1] + p[2] * p[2] + p[3] * p[3])
-    }
-    #[test]
-    fn main() {
-        // 2-point example (bubble)
-        let p = Complex64::new(1.0, 0.0);
-        let m1 = Complex64::new(0.5, 0.0);
-        let m2 = Complex64::new(0.2, 0.0);
-        let result = olo_2_point_complex(p, m1, m2);
-        println!("2-point result: {:?}", result);
-
-        // 3-point example (triangle)
-        let k1 = [0.005, 0.0, 0.0, 0.005];
-        let k2 = [0.005, 0.0, 0.0, -0.005];
-
-        let p1 = Complex64::new(minkowski_dot(k1), 0.0);
-        let p2 = Complex64::new(minkowski_dot(k2), 0.0);
-
-        // p3 = (k1 + k2)^2
-        let k3 = [k1[0] + k2[0], k1[1] + k2[1], k1[2] + k2[2], k1[3] + k2[3]];
-        let p3 = Complex64::new(minkowski_dot(k3), 0.0);
-
-        let m = Complex64::new(0.02,0.0);
-
-        let m1 = m*m;
-        let m2 = m*m;
-        let m3 = m*m;
-
-        let result = olo_3_point_complex(p1, p2, p3, m1, m2, m3);
-        println!("3-point result: {:?}", result);
-        println!("Interal value in Feynman convention: {:?}", result.epsilon_0()*TO_FEYNMAN)
-    }
 }

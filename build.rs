@@ -14,6 +14,11 @@ fn main() {
         if Command::new("python3").arg("--version").status().is_err() {
             panic!("python3 not found! You need Python 3 to build OneLOop.");
         }
+        
+        // Check that gfortran is available
+        if Command::new("gfortran").arg("--version").status().is_err() {
+            panic!("gfortran not found! You need gfortran to build OneLOop.");
+        }
 
         // Run the Python build script
         let status = Command::new("python3")
