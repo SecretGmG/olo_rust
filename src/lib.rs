@@ -113,7 +113,7 @@ mod ffi {
             p3: *const Complex64,
             p4: *const Complex64,
             p12: *const Complex64,
-            p13: *const Complex64,
+            p23: *const Complex64,
             m1: *const Complex64,
             m2: *const Complex64,
             m3: *const Complex64,
@@ -185,7 +185,6 @@ pub fn one_point(m: Complex64) -> OLOResult {
 ///
 /// # Arguments
 /// * `p`  - The squared momentum flowing through the propagator pair.
-///          The imaginary part should be 0.
 /// * `m1` - The squared mass of the first propagator.
 ///          The imaginary part should be non-positive.
 /// * `m2` - The squared mass of the second propagator.
@@ -197,18 +196,18 @@ pub fn one_point(m: Complex64) -> OLOResult {
 /// # Notes
 /// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
-pub fn two_point(p: Complex64, m1: Complex64, m2: Complex64) -> OLOResult {
+pub fn two_point(p: f64, m1: Complex64, m2: Complex64) -> OLOResult {
     let mut r = OLOResult::default();
-    unsafe { ffi::__avh_olo_dp_MOD_b0cc(r.as_mut_ptr(), &p, &m1, &m2) }
+    unsafe { ffi::__avh_olo_dp_MOD_b0cc(r.as_mut_ptr(), &p.into(), &m1, &m2) }
     r
 }
 
 /// Computes the 3-point scalar (triangle) function for three propagators.
 ///
 /// # Arguments
-/// * `p1` - The squared momentum of the first leg. The imaginary part should be 0.
-/// * `p2` - The squared momentum of the second leg. The imaginary part should be 0.
-/// * `p3` - The squared momentum of the third leg, usually `(p1 + p2)^2`. Imaginary part should be 0.
+/// * `p1` - The squared momentum of the first leg.
+/// * `p2` - The squared momentum of the second leg.
+/// * `p3` - The squared momentum of the third leg, usually `(p1 + p2)^2`.
 /// * `m1` - The squared mass of the first propagator. Imaginary part should be non-positive.
 /// * `m2` - The squared mass of the second propagator. Imaginary part should be non-positive.
 /// * `m3` - The squared mass of the third propagator. Imaginary part should be non-positive.
@@ -220,15 +219,15 @@ pub fn two_point(p: Complex64, m1: Complex64, m2: Complex64) -> OLOResult {
 /// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
 pub fn three_point(
-    p1: Complex64,
-    p2: Complex64,
-    p3: Complex64,
+    p1: f64,
+    p2: f64,
+    p3: f64,
     m1: Complex64,
     m2: Complex64,
     m3: Complex64,
 ) -> OLOResult {
     let mut r = OLOResult::default();
-    unsafe { ffi::__avh_olo_dp_MOD_c0cc(r.as_mut_ptr(), &p1, &p2, &p3, &m1, &m2, &m3) }
+    unsafe { ffi::__avh_olo_dp_MOD_c0cc(r.as_mut_ptr(), &p1.into(), &p2.into(), &p3.into(), &m1, &m2, &m3) }
     r
 }
 
@@ -237,12 +236,12 @@ pub fn three_point(
 /// Computes the 4-point scalar (box) function for four propagators.
 ///
 /// # Arguments
-/// * `p1`   - The squared momentum of the first leg. Imaginary part should be 0.
-/// * `p2`   - The squared momentum of the second leg. Imaginary part should be 0.
-/// * `p3`   - The squared momentum of the third leg. Imaginary part should be 0.
-/// * `p4`   - The squared momentum of the fourth leg, usually `p1 + p2 + p3`. Imaginary part should be 0.
-/// * `p12`  - The squared momentum of the sum `p1 + p2`. Imaginary part should be 0.
-/// * `p23`  - The squared momentum of the sum `p2 + p3`. Imaginary part should be 0.
+/// * `p1`   - The squared momentum of the first leg.
+/// * `p2`   - The squared momentum of the second leg.
+/// * `p3`   - The squared momentum of the third leg.
+/// * `p4`   - The squared momentum of the fourth leg `p1 + p2 + p3`.
+/// * `p12`  - The squared momentum of the sum `p1 + p2`.
+/// * `p23`  - The squared momentum of the sum `p2 + p3`.
 /// * `m1`   - The squared mass of the first propagator. Imaginary part should be non-positive.
 /// * `m2`   - The squared mass of the second propagator. Imaginary part should be non-positive.
 /// * `m3`   - The squared mass of the third propagator. Imaginary part should be non-positive.
@@ -255,12 +254,12 @@ pub fn three_point(
 /// This uses the Ellis-Zanderighi normalization convention. To convert to
 /// standard Feynman-diagram normalization, multiply by `TO_FEYNMAN`.
 pub fn four_point(
-    p1: Complex64,
-    p2: Complex64,
-    p3: Complex64,
-    p4: Complex64,
-    p12: Complex64,
-    p23: Complex64,
+    p1:  f64,
+    p2:  f64,
+    p3:  f64,
+    p4:  f64,
+    p12: f64,
+    p23: f64,
     m1: Complex64,
     m2: Complex64,
     m3: Complex64,
@@ -270,12 +269,12 @@ pub fn four_point(
     unsafe {
         ffi::__avh_olo_dp_MOD_d0cc(
             r.as_mut_ptr(),
-            &p1,
-            &p2,
-            &p3,
-            &p4,
-            &p12,
-            &p23,
+            &p1.into(),
+            &p2.into(),
+            &p3.into(),
+            &p4.into(),
+            &p12.into(),
+            &p23.into(),
             &m1,
             &m2,
             &m3,

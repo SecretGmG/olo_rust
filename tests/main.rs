@@ -10,7 +10,7 @@ fn minkowski_dot(p: [f64; 4]) -> f64 {
 #[test]
 fn main() {
     // 2-point example (bubble)
-    let p = Complex64::new(1.0, 0.0);
+    let p = 1.0;
     let m1 = Complex64::new(0.5, 0.0);
     let m2 = Complex64::new(0.2, 0.0);
     let result = two_point(p, m1, m2);
@@ -20,12 +20,12 @@ fn main() {
     let k1 = [0.005, 0.0, 0.0, 0.005];
     let k2 = [0.005, 0.0, 0.0, -0.005];
 
-    let p1 = Complex64::new(minkowski_dot(k1), 0.0);
-    let p2 = Complex64::new(minkowski_dot(k2), 0.0);
+    let p1 = minkowski_dot(k1);
+    let p2 = minkowski_dot(k2);
 
     // p3 = (k1 + k2)^2
     let k3 = [k1[0] + k2[0], k1[1] + k2[1], k1[2] + k2[2], k1[3] + k2[3]];
-    let p3 = Complex64::new(minkowski_dot(k3), 0.0);
+    let p3 = minkowski_dot(k3);
 
     let m = Complex64::new(0.02, 0.0);
 

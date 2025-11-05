@@ -8,16 +8,16 @@ fn test_olo_scale() {
     set_renormalization_scale(mu);
 
     // Just verify it can be called without crashing
-    println!("Successfully set OneLOop renormalisation scale to {}", mu);
+    println!("Successfully set OneLOop renormalization scale to {}", mu);
 }
 #[test]
 fn test_olo_3_point_ir_divergent_with_scales() {
     let m_sr = 0.0;
 
     // IR-divergent momenta squared
-    let s1 = Complex64::new(0.01, 0.0);
-    let s2 = Complex64::new(0.01, 0.0);
-    let s3 = Complex64::new(0.0, 0.0);
+    let s1 = 0.01;
+    let s2 = 0.01;
+    let s3 = 0.0;
 
     let m1_sq = Complex64::new(m_sr, 0.0);
     let m2_sq = Complex64::new(m_sr, 0.0);
@@ -45,13 +45,13 @@ fn test_olo_3_point_ir_divergent_with_scales() {
 fn test_olo_4_point_ir_divergent_with_scales() {
     let m_sr = 0.0;
 
-    let p1 = Complex64::new(0.01, 0.0);
-    let p2 = Complex64::new(0.02, 0.0);
-    let p3 = Complex64::new(0.03, 0.0);
-    let p4 = Complex64::new(0.04, 0.0);
+    let p1 = 0.01;
+    let p2 = 0.02;
+    let p3 = 0.03;
+    let p4 = 0.04;
 
-    let p12 = Complex64::new(0.0, 0.0);
-    let p23 = Complex64::new(0.0, 0.0);
+    let p12 = 0.0;
+    let p23 = 0.0;
 
     let m1_sq = Complex64::new(m_sr, 0.0);
     let m2_sq = Complex64::new(m_sr, 0.0);

@@ -49,15 +49,15 @@ fn one_point(m: Complex<f64>) -> PyOLOResult {
 }
 
 #[pyfunction]
-fn two_point(p: Complex<f64>, m1: Complex<f64>, m2: Complex<f64>) -> PyOLOResult {
+fn two_point(p: f64, m1: Complex<f64>, m2: Complex<f64>) -> PyOLOResult {
     crate::two_point(p, m1, m2).into()
 }
 
 #[pyfunction]
 fn three_point(
-    p1: Complex<f64>,
-    p2: Complex<f64>,
-    p3: Complex<f64>,
+    p1: f64,
+    p2: f64,
+    p3: f64,
     m1: Complex<f64>,
     m2: Complex<f64>,
     m3: Complex<f64>,
@@ -67,12 +67,12 @@ fn three_point(
 
 #[pyfunction]
 fn four_point(
-    p1: Complex<f64>,
-    p2: Complex<f64>,
-    p3: Complex<f64>,
-    p4: Complex<f64>,
-    p12: Complex<f64>,
-    p23: Complex<f64>,
+    p1: f64,
+    p2: f64,
+    p3: f64,
+    p4: f64,
+    p12: f64,
+    p23: f64,
     m1: Complex<f64>,
     m2: Complex<f64>,
     m3: Complex<f64>,

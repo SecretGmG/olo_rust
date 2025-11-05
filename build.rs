@@ -14,16 +14,21 @@ fn main() {
         if Command::new("python3").arg("--version").status().is_err() {
             panic!("python3 not found! You need Python 3 to build OneLOop.");
         }
-        
+
         // Check that gfortran is available
         if Command::new("gfortran").arg("--version").status().is_err() {
             panic!("gfortran not found! You need gfortran to build OneLOop.");
         }
 
+        // Check that m4 is available
+        if Command::new("m4").arg("--version").status().is_err() {
+            panic!("m4 not found! You need m4 to build OneLOop.");
+        }
+
         // Run the Python build script
         let status = Command::new("python3")
             .arg("create.py")
-            .current_dir(lib_dir)
+            .current_dir(&lib_dir)
             .status()
             .expect("Failed to run create.py inside oneloop/");
 
@@ -40,10 +45,7 @@ fn main() {
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
     println!("cargo:rustc-link-lib=static=avh_olo");
 
-    // Link standard Fortran libraries (gfortran, quadmath)
+    // Link standard Fortran libraries
     println!("cargo:rustc-link-lib=gfortran");
-    println!("cargo:rustc-link-lib=quadmath");
-
-    // Re-run build.rs if the OneLOop source changes
-    println!("cargo:rerun-if-changed={}", lib_dir.display());
+    //println!("cargo:rustc-link-lib=quadmath");
 }

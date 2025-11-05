@@ -1,3 +1,5 @@
+.PHONY: clean rebuild develop
+
 clean:
 	cd oneloop && ./clean.sh
 	cargo clean
