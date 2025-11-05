@@ -11,8 +11,8 @@ This crate provides **Rust and Python interfaces** to the [OneLOop](https://hela
   - `four_point` → 4-point (box) function
 - Returns a `ResultOLO` struct containing the Laurent expansion coefficients:
   - `ε⁰` → finite term
-  - `ε⁻¹` → first-order divergence (zero if IR-finite)
-  - `ε⁻²` → second-order divergence (zero if IR-finite)
+  - `ε⁻¹` → first-order divergence (zero if finite)
+  - `ε⁻²` → second-order divergence (zero if finite)
 
 ## Rust installation
 
