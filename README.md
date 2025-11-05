@@ -1,24 +1,21 @@
-# OneLOop Rust Wrapper
+# OneLOop Bridge
 
-This crate provides a **Rust interface** to the [OneLOop](https://helac-phegas.web.cern.ch/OneLOop.html) Fortran library, enabling computation of **scalar one-loop integrals** in a safe and idiomatic Rust way.
+This crate provides **Rust and Python interfaces** to the [OneLOop](https://helac-phegas.web.cern.ch/OneLOop.html) Fortran library, enabling computation of **scalar one-loop integrals** in a safe and idiomatic way.
 
-
----
 
 ## Features
 
-- Safe Rust wrappers for OneLOop scalar functions:
-  - `olo_1_point_complex` → 1-point (tadpole) function
-  - `olo_2_point_complex` → 2-point (bubble) function
-  - `olo_3_point_complex` → 3-point (triangle) function
-  - `olo_4_point_complex` → 4-point (box) function
+- Safe wrappers for OneLOop scalar functions:
+  - `one_point` → 1-point (tadpole) function
+  - `two_point` → 2-point (bubble) function
+  - `three_point` → 3-point (triangle) function
+  - `four_point` → 4-point (box) function
 - Returns a `ResultOLO` struct containing the Laurent expansion coefficients:
   - `ε⁰` → finite term
   - `ε⁻¹` → first-order divergence (zero if IR-finite)
   - `ε⁻²` → second-order divergence (zero if IR-finite)
----
 
-## Installation and Build Process for rust projects
+## Rust installation
 
 The wrapper can simply be added with `cargo add`:
 
@@ -26,33 +23,14 @@ The wrapper can simply be added with `cargo add`:
 cargo add --git https://github.com/SecretGmG/olo_rust
 ```
 
-When you build the crate via `cargo build`
 
-A `build.rs` script checks whether `oneloop/libavh_olo.a` exists.
+## Python installation
 
-If it is missing, the script runs `python3 create.py` inside the `oneloop/` directory to generate the static library.
-
-Cargo then links the library (`libavh_olo.a`) and the Fortran runtime gfortran automatically.
-
-**Requirements:**
-
-- `python3`
-- `gfortran`
-- `m4`
-
-Note: Windows is not currently supported.
-
----
-
-## Installation and Build Process for Python projects
-
-When building with the `python` feature enabled, Python bindings are built using `pyo3`.
-To use them, clone the repository and build with `maturin`. The same dependencies as above still apply.
-See `python_example.py` for more examples. Make sure to run this in a virtual environment!
+Python bindings are built using maturin.
+This can be done by running the following in an active python environment
 
 ```bash
 git clone https://github.com/SecretGmG/olo_rust.git
-pip install maturin[patchelf]
 cd olo_rust && make -f Makefile develop
 ```
 
@@ -66,13 +44,36 @@ r = olo_rust.one_point(1.0)
 print(r.epsilon_0)
 ```
 
----
+See `python_example.py` for more examples.
 
-## Example
+
+
+## System Requirements
+
+- Python 3 (`python3`)
+- GNU Fortran compiler (`gfortran`)
+- `m4` macro processor
+
+> Note: Windows is not currently supported.
+
+
+## Build process
+
+When the crate is built by cargo
+
+A `build.rs` script checks whether the compiled binary `oneloop/libavh_olo.a` exists.
+
+If it is missing, the script runs `python3 create.py` inside the `oneloop/` directory to generate the static library.
+
+Cargo then links the library (`libavh_olo.a`) and the Fortran runtime gfortran automatically.
+
+Note: Windows is not currently supported.
+
+## Rust example
 
 ```rust
 use num_complex::Complex64;
-use olo_rust::{TO_FEYNMAN, two_point, three_point};
+use oneloop_bridge::{TO_FEYNMAN, two_point, three_point};
 
 
 /// Minkowski dot product: (E^2 - px^2 - py^2 - pz^2)
@@ -108,13 +109,11 @@ fn main() {
     let result = three_point(p1, p2, p3, m1, m2, m3);
     println!("3-point result: {:?}", result);
     println!(
-        "Interal value in Feynman convention: {:?}",
+        "Integral value in Feynman convention: {:?}",
         result.epsilon_0() * TO_FEYNMAN
     )
 }
 ```
-
----
 
 ## License
 
