@@ -3,6 +3,18 @@ name = "olo_rust"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "olo_rust"
+
 [dependencies]
 num-complex = "0.4"
 num-traits = "0.2.19"
+
+[dependencies.pyo3]
+version = "0.27.1"
+optional = true
+features = ["extension-module", "num-complex"]  # needed for building Python modules
+
+[features]
+default = ["python"]
+python = ["pyo3"]  # optional feature to enable Python bindings

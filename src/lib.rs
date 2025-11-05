@@ -3,6 +3,9 @@ use num_complex::Complex64;
 use std::{f64::consts::PI, fmt};
 use std::ffi::CString;
 
+#[cfg(feature = "python")]
+mod python;
+
 
 /// Conversion factor from the Ellis-Zanderighi / OneLOop normalization of
 /// one-loop scalar integrals to the textbook Feynman-diagram normalization.
