@@ -5,6 +5,7 @@ edition = "2024"
 
 [lib]
 name = "olo_rust"
+crate-type = ["lib", "cdylib"]
 
 [dependencies]
 num-complex = "0.4"
