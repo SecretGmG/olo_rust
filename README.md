@@ -37,7 +37,7 @@ After running this, you can use the bindings in Python:
 ```python
 import oneloop_bridge
 
-r = olo_rust.one_point(1.0)
+r = oneloop_bridge.one_point(1.0)
 print(r.epsilon_0)
 ```
 
