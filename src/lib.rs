@@ -11,8 +11,8 @@
 //!   - `four_point` → 4-point (box) function
 //! - Returns `OLOResult` with Laurent expansion coefficients:
 //!   - `ε⁰` → finite term
-//!   - `ε⁻¹` → first-order divergence (zero if IR-finite)
-//!   - `ε⁻²` → second-order divergence (zero if IR-finite)
+//!   - `ε⁻¹` → first-order divergence (zero if finite)
+//!   - `ε⁻²` → second-order divergence (zero if finite)
 //! - Conversion to standard Feynman-diagram normalization via `TO_FEYNMAN`.
 //! - Configurable logging, renormalization scale and on-shell thresholds.
 //! 
@@ -57,8 +57,8 @@ pub const TO_FEYNMAN: f64 = -1.0 / (16.0 * PI * PI);
 /// parameter `ε = (4-d)/2`:
 ///
 /// - `values[0]`  ε⁰ coefficient
-/// - `values[1]`  ε⁻¹ coefficient (vanishes for IR-finite cases)
-/// - `values[2]`  ε⁻² coefficient (vanishes for IR-finite cases)
+/// - `values[1]`  ε⁻¹ coefficient (vanishes for finite cases)
+/// - `values[2]`  ε⁻² coefficient (vanishes for finite cases)
 #[derive(Clone, Copy, Default, PartialEq)]
 pub struct OLOResult {
     values: [Complex64; 3],

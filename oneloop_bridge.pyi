@@ -40,8 +40,8 @@ class PyOLOResult:
     
     Attributes:
         epsilon_0: ε⁰ coefficient (finite term)
-        epsilon_minus_1: ε⁻¹ coefficient (first-order divergence, zero if IR-finite)
-        epsilon_minus_2: ε⁻² coefficient (second-order divergence, zero if IR-finite)
+        epsilon_minus_1: ε⁻¹ coefficient (first-order divergence, zero if finite)
+        epsilon_minus_2: ε⁻² coefficient (second-order divergence, zero if finite)
     """
     @property
     def epsilon_0(self) -> float: ...
